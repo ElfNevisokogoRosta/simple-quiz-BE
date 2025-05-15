@@ -1,0 +1,11 @@
+// model Quiz {
+//   id          String        @id @default(uuid())
+//   title       String
+//   description String?
+//   createdBy   String?
+//   creator     User?         @relation("UserQuizzes", fields: [createdBy], references: [id])
+//   questions   Question[]
+//   attempts    QuizAttempt[]
+//   createdAt   DateTime      @default(now())
+//   updatedAt   DateTime      @updatedAt
+// }

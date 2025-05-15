@@ -1,0 +1,10 @@
+// model QuizAttempt {
+//   id         String        @id @default(uuid())
+//   user       User          @relation(fields: [userId], references: [id])
+//   userId     String
+//   quiz       Quiz          @relation(fields: [quizId], references: [id])
+//   quizId     String
+//   userAnswers UserAnswer[]
+//   startedAt  DateTime      @default(now())
+//   completedAt DateTime?
+// }

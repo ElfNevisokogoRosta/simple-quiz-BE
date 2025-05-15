@@ -1,0 +1,11 @@
+// model UserAnswer {
+//   id          String     @id @default(uuid())
+//   attempt     QuizAttempt @relation(fields: [attemptId], references: [id])
+//   attemptId   String
+//   question    Question    @relation(fields: [questionId], references: [id])
+//   questionId  String
+//   answer      Answer?     @relation(fields: [answerId], references: [id])
+//   answerId    String?
+//   textAnswer  String?
+//   createdAt   DateTime    @default(now())
+// }

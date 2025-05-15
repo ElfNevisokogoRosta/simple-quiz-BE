@@ -1,0 +1,85 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id         String         @id @default(uuid())
+  email      String         @unique
+  password   String
+  name       String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  quizzes    Quiz[]         @relation("UserQuizzes")
+  attempts   QuizAttempt[]
+}
+
+
+model UserAnswer {
+  id          String     @id @default(uuid())
+  attempt     QuizAttempt @relation(fields: [attemptId], references: [id])
+  attemptId   String
+  question    Question    @relation(fields: [questionId], references: [id])
+  questionId  String
+  answer      Answer?     @relation(fields: [answerId], references: [id])
+  answerId    String?
+  textAnswer  String?
+  createdAt   DateTime    @default(now())
+}
+
+model Quiz {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  createdBy   String?
+  creator     User?         @relation("UserQuizzes", fields: [createdBy], references: [id])
+  questions   Question[]
+  attempts    QuizAttempt[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model QuizAttempt {
+  id         String        @id @default(uuid())
+  user       User          @relation(fields: [userId], references: [id])
+  userId     String
+  quiz       Quiz          @relation(fields: [quizId], references: [id])
+  quizId     String
+  userAnswers UserAnswer[]
+  startedAt  DateTime      @default(now())
+  completedAt DateTime?
+}
+
+
+model Question {
+  id           String        @id @default(uuid())
+  text         String
+  questionType QuestionType
+  quiz         Quiz          @relation(fields: [quizId], references: [id])
+  quizId       String
+  answers      Answer[]
+  userAnswers  UserAnswer[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Answer {
+  id         String        @id @default(uuid())
+  text       String
+  isCorrect  Boolean       @default(false)
+  question   Question      @relation(fields: [questionId], references: [id])
+  questionId String
+  userAnswers UserAnswer[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum QuestionType {
+  SINGLE
+  MULTIPLE
+  TEXT
+}
