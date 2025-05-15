@@ -1,17 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/db/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-    constructor(private readonly prisma:PrismaService){}
-
-    async createUser(userData:any){
-        try {
-            return this.prisma.user.create({
-                data: {...userData}
-            })
-        } catch (error) {
-            
-        }
-    }
+  constructor(private readonly user: UserRepository) {}
 }
