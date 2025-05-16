@@ -1,7 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { AuthDTO } from './auth.dto';
+import { JwtPayload } from './auth.types';
+import { UserCreateDTO } from 'src/user/user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -28,9 +36,72 @@ export class AuthService {
         return results;
       }
     } catch (error) {
-      return new BadRequestException('Invalid credential');
+      throw new BadRequestException('Invalid credential');
     }
   }
 
-  async signIn(){}
+  async signIn(authDTO: AuthDTO) {
+    const userData = await this.validateUser(authDTO);
+
+    if (!userData) return null;
+
+    const payload: JwtPayload = {
+      id: userData.id,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: this.JWTTTL,
+        secret: this.JWTSecret,
+      }),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: this.RefreshTTL,
+        secret: this.RefreshSecret,
+      }),
+    };
+  }
+
+  async signUp(userCreateDTO: UserCreateDTO) {
+    try {
+      const hassPass = await bcrypt.hash(userCreateDTO.password, 10);
+
+      const newUser = await this.user.createNewUser({
+        ...userCreateDTO,
+        password: hassPass,
+      });
+
+      const payload: JwtPayload = {
+        id: newUser.id,
+      };
+      return {
+        access_token: this.jwtService.sign(payload, {
+          expiresIn: this.JWTTTL,
+          secret: this.JWTSecret,
+        }),
+        refresh_token: this.jwtService.sign(payload, {
+          expiresIn: this.RefreshTTL,
+          secret: this.RefreshSecret,
+        }),
+      };
+    } catch (error) {
+      throw new ConflictException('Conflict');
+    }
+  }
+
+  async refreshToken(userPayload: Partial<User>) {
+    const payload: JwtPayload = {
+      id: userPayload.id,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: this.JWTTTL,
+        secret: this.JWTSecret,
+      }),
+      refresh_token: this.jwtService.sign(payload, {
+        expiresIn: this.RefreshTTL,
+        secret: this.RefreshSecret,
+      }),
+    };
+  }
 }
