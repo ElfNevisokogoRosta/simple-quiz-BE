@@ -7,11 +7,11 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
     }),
     UserModule,
     AuthModule,
-    ],
+  ],
   controllers: [],
   providers: [PrismaService],
 })
