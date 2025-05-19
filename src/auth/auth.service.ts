@@ -3,13 +3,13 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AuthDTO } from './auth.dto';
 import { JwtPayload } from './auth.types';
 import { UserCreateDTO } from 'src/user/user.dto';
 import { User } from '@prisma/client';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class AuthService {
