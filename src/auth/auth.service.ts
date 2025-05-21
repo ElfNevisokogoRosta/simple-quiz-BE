@@ -63,11 +63,11 @@ export class AuthService {
 
   async signUp(userCreateDTO: UserCreateDTO) {
     try {
-      const hassPass = await bcrypt.hash(userCreateDTO.password, 10);
+      const hashPass = await bcrypt.hash(userCreateDTO.password, 10);
 
       const newUser = await this.user.createNewUser({
         ...userCreateDTO,
-        password: hassPass,
+        password: hashPass,
       });
 
       const payload: JwtPayload = {
