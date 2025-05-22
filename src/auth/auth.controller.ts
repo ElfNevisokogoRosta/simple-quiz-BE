@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserCreateDTO } from 'src/user/user.dto';
+import { userCreateDTO, UserCreateDTO } from 'src/user/user.dto';
 import { AuthDTO } from './auth.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ZodValidationPipe } from 'src/common/pipes/zod_validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +23,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @UsePipes(new ZodValidationPipe(userCreateDTO))
   async signUp(@Body() user: UserCreateDTO) {
     return await this.authServices.signUp(user);
   }
